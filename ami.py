@@ -1,7 +1,14 @@
 import boto3
+import sys
  
 client = boto3.client('ec2', region_name='ap-south-1')
- 
+def delete_amis(access_key_id, secret_access_key):
+    # Use Boto3 to interact with AWS services
+    client = boto3.client(
+        'ec2',
+        aws_access_key_id=access_key_id,
+        aws_secret_access_key=secret_access_key
+    )
 # Describe instances
 instances = client.describe_instances()
 used_amis = []
@@ -48,3 +55,10 @@ for custom_ami in custom_amis_list:
     if custom_ami not in used_amis:
         print(f"Deregistering AMI: {custom_ami}")
         client.deregister_image(ImageId=custom_ami)
+if __name__ == "__main__":
+    # Retrieve AWS access key and secret key from command-line arguments
+    access_key_id = sys.argv[1]
+    secret_access_key = sys.argv[2]
+
+    # Call the function to delete AMIs
+    delete_amis(access_key_id, secret_access_key)
